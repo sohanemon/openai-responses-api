@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import { Output, streamText, tool } from "ai";
 import { listingSchema } from "./schema";
 import { z } from "zod";
@@ -12,21 +12,30 @@ export async function POST(req: Request) {
   const stream = streamText({
     model: openai.responses("gpt-4o-mini"),
     system: 'you are a listing creator, check guidance from the file. if not available in the file then say i don\'t know.',
-    // toolCallStreaming: true,
-    maxSteps: 3,
+    toolCallStreaming: true,
+    maxSteps: 2,
     prompt: `what is the file about?`,
     // experimental_telemetry: {
     //   functionId: 'using-completion',
     //   isEnabled: true,
     // },
-    tools: {
-      fileSearch: fileSearchTool
-    },
+    // tools: {
+    //   fileSearch: fileSearchTool
+    // },
+    providerOptions: { openai: { parallelToolCalls: false } as OpenAIResponsesProviderOptions },
     experimental_output: Output.object({ schema: listingSchema }),
   });
 
 
-  return stream.toDataStreamResponse()
+
+
+  return new Response(stream.experimental_partialOutputStream);
+
+
+
+
+
+
 }
 
 const fileSearchTool = tool({
