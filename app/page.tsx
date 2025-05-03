@@ -5,9 +5,9 @@ import { listingSchema } from './api/use-object/schema';
 import { useState } from 'react';
 
 export default function Page() {
-  const [useResponsesApi, setUseResponsesApi] = useState(false);
+  const [useResponsesApi, setUseResponsesApi] = useState(true);
   const { submit, isLoading, object, stop } = useObject({
-    api: '/api/use-object',
+    api: '/api/use-object-vercel',
     schema: listingSchema,
   });
 
@@ -37,9 +37,9 @@ export default function Page() {
         </div>
       )}
 
-      <div className="flex flex-col gap-4 mt-4">
+      <pre className='container'>
         {JSON.stringify(object, null, 2)?.toString()}
-      </div>
+      </pre>
     </div>
   );
 }
