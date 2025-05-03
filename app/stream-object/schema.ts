@@ -2,7 +2,7 @@ import { DeepPartial } from 'ai';
 import { z } from 'zod';
 
 // define a schema for the notifications
-export const notificationSchema = z.object({
+export const listingSchema = z.object({
   notifications: z.array(
     z.object({
       name: z.string().describe('Name of a fictional person.'),
@@ -13,4 +13,4 @@ export const notificationSchema = z.object({
 });
 
 // define a type for the partial notifications during generation
-export type PartialNotification = DeepPartial<typeof notificationSchema>;
+export type PartialNotification = DeepPartial<typeof listingSchema>;
