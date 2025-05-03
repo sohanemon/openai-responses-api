@@ -10,6 +10,7 @@ export default function Page() {
     api: '/api/use-object-vercel',
     schema: listingSchema,
   });
+  console.info("⚡[page.tsx:10] object:", object);
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4 m-4">

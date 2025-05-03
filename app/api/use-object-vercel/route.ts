@@ -1,30 +1,32 @@
 import { openai } from "@ai-sdk/openai";
-import { Output, generateText, streamText, tool } from "ai";
+import { Output, streamText, tool } from "ai";
 import { listingSchema } from "./schema";
 import { z } from "zod";
+import { createReadableStreamResponsesAPI } from "@/lib/server-only/create-readable-stream";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const context: any = await req.json();
 
-  const result = await generateText({
-    model: openai("gpt-4o-mini"),
-    // system: 'check guidance from the file. if not available in the file then say i don\'t know.',
-    prompt: `create a listing for sports towel, responsd after the file search done`,
+  const stream = streamText({
+    model: openai.responses("gpt-4o-mini"),
+    system: 'you are a listing creator, check guidance from the file. if not available in the file then say i don\'t know.',
+    // toolCallStreaming: true,
+    maxSteps: 3,
+    prompt: `what is the file about?`,
     // experimental_telemetry: {
-    //   functionId: 'mannual-file-search',
+    //   functionId: 'using-completion',
     //   isEnabled: true,
     // },
     tools: {
-      // fileSearch: fileSearchTool
+      fileSearch: fileSearchTool
     },
-    // experimental_output: Output.object({ schema: listingSchema }),
+    experimental_output: Output.object({ schema: listingSchema }),
   });
 
 
-  console.info("⚡[route.ts:67] result.response:", result.text);
-  return new Response(result.text);
+  return stream.toDataStreamResponse()
 }
 
 const fileSearchTool = tool({
@@ -46,7 +48,6 @@ const fileSearchTool = tool({
       },
     })
 
-    console.log(`OpenAI API response status: ${response.status}`)
 
     const responseText = await response.text()
 
@@ -54,7 +55,7 @@ const fileSearchTool = tool({
     if (!results?.data?.length) {
       return "No files found matching your query."
     } else {
-      const output = [
+      return [
         "<sources>",
         results.data.flatMap((res: any) => [
           `<result file_id='${res.file_id}' file_name='${res.file_name}'>`,
@@ -64,8 +65,6 @@ const fileSearchTool = tool({
         "</sources>",
       ].join("\n")
 
-      console.info("⚡[route.ts:59] output:", output);
-      return output
     }
   },
 })
