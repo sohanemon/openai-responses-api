@@ -2,7 +2,6 @@ import { OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import { Output, streamText, tool } from "ai";
 import { listingSchema } from "./schema";
 import { z } from "zod";
-import { createReadableStreamResponsesAPI } from "@/lib/server-only/create-readable-stream";
 
 export const maxDuration = 30;
 
@@ -14,22 +13,19 @@ export async function POST(req: Request) {
     system: 'you are a listing creator, check guidance from the file. if not available in the file then say i don\'t know.',
     toolCallStreaming: true,
     maxSteps: 2,
-    prompt: `what is the file about?`,
-    // experimental_telemetry: {
-    //   functionId: 'using-completion',
-    //   isEnabled: true,
-    // },
-    // tools: {
-    //   fileSearch: fileSearchTool
-    // },
+    prompt: `listing for sports towel`,
+    experimental_telemetry: {
+      functionId: 'using-object-with-textstream',
+      isEnabled: true,
+    },
+    tools: {
+      fileSearch: fileSearchTool
+    },
     providerOptions: { openai: { parallelToolCalls: false } as OpenAIResponsesProviderOptions },
     experimental_output: Output.object({ schema: listingSchema }),
   });
 
-
-
-
-  return new Response(stream.experimental_partialOutputStream);
+  return stream.toTextStreamResponse()
 
 
 
