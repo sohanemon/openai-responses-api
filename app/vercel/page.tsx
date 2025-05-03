@@ -1,13 +1,13 @@
 'use client';
 
 import { experimental_useObject as useObject } from '@ai-sdk/react';
-import { listingSchema } from './api/use-object/schema';
 import { useState } from 'react';
+import { listingSchema } from '../api/use-object-vercel/schema';
 
 export default function Page() {
   const [useResponsesApi, setUseResponsesApi] = useState(true);
   const { submit, isLoading, object, stop } = useObject({
-    api: '/api/use-object-openai',
+    api: '/api/use-object-vercel',
     schema: listingSchema,
   });
 
