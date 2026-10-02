@@ -13,7 +13,7 @@
     "@ai-sdk/react": "latest",
     "@ai-sdk/ui-utils": "latest",
     "@opentelemetry/api-logs": "^0.52.1",
-    "@opentelemetry/instrumentation": "^0.52.1",
+    "@opentelemetry/instrumentation": "^0.222.0",
     "@opentelemetry/sdk-logs": "^0.52.1",
     "@sohanemon/utils": "^4.1.12",
     "@vercel/blob": "^0.23.4",
